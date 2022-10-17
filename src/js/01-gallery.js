@@ -6,7 +6,6 @@ galleryRef.insertAdjacentHTML("afterbegin", galleryContainer);
 galleryRef.addEventListener("click", openerLargeImage);
 
 function creatGallery(galleryitems) {
-  //   preventDefault();
   return galleryItems
     .map(({ preview, original, description }) => {
       return ` <div class="gallery__item">
@@ -17,13 +16,30 @@ function creatGallery(galleryitems) {
             data-source="${original}"
             alt="${description}"
           />
-        // </a>
+        </a>
       </div>`;
     })
     .join("");
 }
 function openerLargeImage(e) {
-  largeImg.src = `target.original`;
+  e.preventDefault();
+  const handler = (e) => {
+    if (e.key === "Escape") {
+      largeImage.close();
+    }
+  };
+  if (!e.target.classList.contains(`gallery__image`)) {
+    return;
+  }
+  const largeImage = basicLightbox.create(
+    `<img width="100%" height="100%" src="${e.target.dataset.source}">
+    `,
+    {
+      onClose: () => {
+        document.removeEventListener("keydown", handler);
+      },
+    }
+  );
+  largeImage.show();
+  document.addEventListener("keydown", handler);
 }
-
-console.log(creatGallery(galleryItems));
